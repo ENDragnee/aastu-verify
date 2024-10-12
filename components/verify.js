@@ -9,6 +9,7 @@ export default function Page() {
   const [currentStudent, setCurrentStudent] = useState(null)
   const [recentVerifications, setRecentVerifications] = useState([])
   const [students, setStudents] = useState([])
+  const [takenCount, setTakenCount] = useState(0)
 
   useEffect(() => {
     loadStudentData()
@@ -23,6 +24,7 @@ export default function Page() {
       const data = await response.json()
       setStudents(data)
       updateRecentVerifications(data)
+      updateTakenCount(data)
     } catch (error) {
       console.error('Error loading student data:', error)
     }
@@ -35,12 +37,19 @@ export default function Page() {
     setRecentVerifications(takenStudents)
   }
 
+  const updateTakenCount = (studentsData) => {
+    const count = studentsData.filter(student => student.status === 'Taken').length
+    setTakenCount(count)
+  }
+
   const handleVerification = async (e) => {
     e.preventDefault()
     const student = students.find(s => s.studentId === studentId)
     if (student) {
       setCurrentStudent(student)
-      await handleStatusChange(student.status !== 'Taken')
+      if (student.status !== 'Taken') {
+        await handleStatusChange(true)
+      }
     } else {
       setCurrentStudent(null)
     }
@@ -69,6 +78,7 @@ export default function Page() {
       setStudents(updatedStudents)
       setCurrentStudent({...currentStudent, status: newStatus})
       updateRecentVerifications(updatedStudents)
+      updateTakenCount(updatedStudents)
     } catch (error) {
       console.error('Error updating student status:', error)
     }
@@ -78,7 +88,7 @@ export default function Page() {
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 md:p-8">
       <h1 className="text-3xl font-bold mb-8 text-center">Student Verification System</h1>
       
-      <div className="max-w-md mx-auto mb-8">
+      <div className="max-w-md mx-auto mb-8 relative">
         <form onSubmit={handleVerification} className="flex items-center bg-gray-800 rounded-full p-2 shadow-lg">
           <input
             type="text"
@@ -91,6 +101,11 @@ export default function Page() {
             <Search size={24} />
           </button>
         </form>
+        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 -translate-x-full mr-4">
+          <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            Taken: {takenCount}
+          </span>
+        </div>
       </div>
 
       <AnimatePresence>

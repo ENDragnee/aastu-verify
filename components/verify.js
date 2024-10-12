@@ -20,7 +20,7 @@ export default function Page() {
     try {
       const response = await fetch('/api/students',{
         next: {
-          revalidate: 3,
+          revalidate: 1,
         },
       })
       if (!response.ok) {

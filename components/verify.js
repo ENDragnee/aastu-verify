@@ -42,17 +42,15 @@ export default function Page() {
 
   const updateRecentVerifications = (studentsData) => {
     const takenStudents = studentsData
-      .filter(student => student.status === 'Taken' || student.status === null) // Treat 'Not Taken' as null
+      .filter(student => student.status === 'Taken')
       .slice(0, 10)
     setRecentVerifications(takenStudents)
   }
-  
 
   const updateTakenCount = (studentsData) => {
-    const count = studentsData.filter(student => student.status === 'Taken' || student.status === null).length
+    const count = studentsData.filter(student => student.status === 'Taken').length
     setTakenCount(count)
   }
-  
 
   const handleVerification = async (e) => {
     e.preventDefault()
@@ -68,7 +66,7 @@ export default function Page() {
   const handleStatusChange = async (checked, student = currentStudent) => {
     if (!student) return
   
-    const newStatus = checked ? 'Taken' : null  // Set null instead of 'Not Taken'
+    const newStatus = checked ? 'Taken' : 'Not taken'
   
     try {
       const response = await fetch('/api/students/update', {
@@ -97,12 +95,11 @@ export default function Page() {
   
       // Update the current student
       setCurrentStudent({ ...student, status: newStatus })
-  
+      
     } catch (error) {
       console.error('Error updating student status:', error)
     }
-  }
-    
+  }  
 
   // Conditionally rendering loading screen or main content
   return loading ? (

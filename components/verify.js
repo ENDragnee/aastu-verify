@@ -203,6 +203,10 @@ export default function Page() {
                 <p className="font-medium">{currentStudent.admission}</p>
               </div>
               <div>
+                <p className="text-gray-400">Sex</p>
+                <p className="font-medium">{currentStudent.sex}</p>
+              </div>
+              <div>
                 <p className="text-gray-400">Status</p>
                 <p className="font-medium">{currentStudent.status}</p>
               </div>

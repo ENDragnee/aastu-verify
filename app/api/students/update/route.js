@@ -12,11 +12,15 @@ export async function POST(request) {
       [newStatus, id]
     );
 
+    // Set cache control headers
+    const response = NextResponse.json({ message: 'Student status updated successfully' });
+    response.headers.set('Cache-Control', 'no-store, max-age=0');
+
     if (result.affectedRows === 0) {
       return NextResponse.json({ error: 'Student not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ message: 'Student status updated successfully' });
+    return response;
   } catch (error) {
     console.error('Error updating student status:', error);
     return NextResponse.json({ error: 'Error updating student data' }, { status: 500 });

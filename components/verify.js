@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect} from 'react'
 import { Search, User, CreditCard } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -11,15 +11,9 @@ export default function Page() {
   const [students, setStudents] = useState([])
   const [takenCount, setTakenCount] = useState(0)
   const [loading, setLoading] = useState(true) // Added loading state
-  const effectRan = useRef(false);
-
 
   useEffect(() => {
-    if(!effectRan.current)
-    {
       loadStudentData()
-      effectRan.current = true;
-    }
   }, [])
 
   const loadStudentData = async () => {

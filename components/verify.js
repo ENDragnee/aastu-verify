@@ -66,7 +66,7 @@ export default function Page() {
   const handleStatusChange = async (checked, student = currentStudent) => {
     if (!student) return
   
-    const newStatus = checked ? 'Taken' : 'Not taken'
+    const newStatus = checked ? 'Taken' : ''
   
     try {
       const response = await fetch('/api/students/update', {

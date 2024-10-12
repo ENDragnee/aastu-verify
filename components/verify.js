@@ -45,15 +45,20 @@ export default function Page() {
   const handleVerification = async (e) => {
     e.preventDefault()
     const student = students.find(s => s.studentId === studentId)
+  
     if (student) {
       setCurrentStudent(student)
+      
+      // Only update if the status is not already 'Taken'
       if (student.status !== 'Taken') {
         await handleStatusChange(true)
       }
     } else {
+      // If the student is not found, clear the current student
       setCurrentStudent(null)
     }
   }
+  
 
   const handleStatusChange = async (checked) => {
     if (!currentStudent) return

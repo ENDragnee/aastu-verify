@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Search, User, CreditCard } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -10,9 +10,14 @@ export default function Page() {
   const [recentVerifications, setRecentVerifications] = useState([])
   const [students, setStudents] = useState([])
   const [takenCount, setTakenCount] = useState(0)
+  const effectRan = useRef(false);
 
   useEffect(() => {
-    loadStudentData()
+    if(!effectRan.current){
+      loadStudentData()
+      console.log("Use effect is triggered");
+    }
+    effectRan.current = true;
   }, [])
 
   const loadStudentData = async () => {
@@ -44,6 +49,10 @@ export default function Page() {
 
   const handleVerification = async (e) => {
     e.preventDefault()
+  
+    // Clear current student state to avoid showing old data
+    setCurrentStudent(null)
+  
     const student = students.find(s => s.studentId === studentId)
   
     if (student) {
@@ -51,43 +60,50 @@ export default function Page() {
       
       // Only update if the status is not already 'Taken'
       if (student.status !== 'Taken') {
-        await handleStatusChange(true)
+        await handleStatusChange(true, student) // Pass the student directly
       }
     } else {
-      // If the student is not found, clear the current student
+      console.log('Student not found');
+      // Clear the current student if not found
       setCurrentStudent(null)
     }
   }
   
-
-  const handleStatusChange = async (checked) => {
-    if (!currentStudent) return
-
+  const handleStatusChange = async (checked, student = currentStudent) => {
+    if (!student) return
+  
     const newStatus = checked ? 'Taken' : 'Not taken'
+    
     try {
       const response = await fetch('/api/students/update', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: currentStudent.studentId, newStatus }),
+        body: JSON.stringify({ id: student.studentId, newStatus }),
       })
-
+  
       if (!response.ok) {
         throw new Error('Failed to update student status')
       }
-
-      const updatedStudents = students.map(s => 
-        s.studentId === currentStudent.studentId ? {...s, status: newStatus} : s
+  
+      // Update the local state of the students array with the new status
+      const updatedStudents = students.map(s =>
+        s.studentId === student.studentId ? { ...s, status: newStatus } : s
       )
       setStudents(updatedStudents)
-      setCurrentStudent({...currentStudent, status: newStatus})
+  
+      // Update current student state with the new status
+      setCurrentStudent({ ...student, status: newStatus })
+  
+      // Update other data dependent on status
       updateRecentVerifications(updatedStudents)
       updateTakenCount(updatedStudents)
     } catch (error) {
       console.error('Error updating student status:', error)
     }
   }
+  
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 md:p-8">

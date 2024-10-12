@@ -18,21 +18,22 @@ export default function Page() {
 
   const loadStudentData = async () => {
     try {
-      const response = await fetch('/api/students')
+      const response = await fetch('/api/students', { cache: 'no-store' }); // Disable caching on fetch
       if (!response.ok) {
-        throw new Error('Failed to fetch student data')
+        throw new Error('Failed to fetch student data');
       }
-      const data = await response.json()
-      console.log('Fetched student data:', data)
-      setStudents(data)
-      updateRecentVerifications(data)
-      updateTakenCount(data)
+      const data = await response.json();
+      console.log('Fetched student data:', data);
+      setStudents(data);
+      updateRecentVerifications(data);
+      updateTakenCount(data);
     } catch (error) {
-      console.error('Error loading student data:', error)
+      console.error('Error loading student data:', error);
     } finally {
-      setLoading(false) // Stop loading after data is fetched
+      setLoading(false); // Stop loading after data is fetched
     }
-  }
+  };
+  
 
   const updateRecentVerifications = (studentsData) => {
     const takenStudents = studentsData
@@ -148,14 +149,6 @@ export default function Page() {
   ) : (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 md:p-8">
       <h1 className="text-3xl font-bold mb-8 text-center">Student Verification System</h1>
-      <div className="flex justify-center mb-4">
-        <button 
-          onClick={loadStudentData} // Trigger data load on button click
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
-        >
-          Load Student Data
-        </button>
-      </div>
       <div className="max-w-md mx-auto mb-8 relative">
         <form onSubmit={handleVerification} className="flex items-center bg-gray-800 rounded-full p-2 shadow-lg">
           <input

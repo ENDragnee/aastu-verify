@@ -200,7 +200,7 @@ export default function Page() {
               </div>
               <div>
                 <p className="text-gray-400">Admission number</p>
-                <p className="font-medium">{currentStudent.admission}</p>
+                <p className="font-medium">{currentStudent.addmission}</p>
               </div>
               <div>
                 <p className="text-gray-400">Sex</p>

@@ -35,17 +35,20 @@ export default function Page() {
     setRecentVerifications(takenStudents)
   }
 
-  const handleVerification = (e) => {
+  const handleVerification = async (e) => {
     e.preventDefault()
-    const student = students.find(s => s.id === studentId)
+    const student = students.find(s => s.studentId === studentId)
     if (student) {
       setCurrentStudent(student)
+      await handleStatusChange(student.status !== 'Taken')
     } else {
       setCurrentStudent(null)
     }
   }
 
   const handleStatusChange = async (checked) => {
+    if (!currentStudent) return
+
     const newStatus = checked ? 'Taken' : 'Not taken'
     try {
       const response = await fetch('/api/students/update', {
@@ -53,7 +56,7 @@ export default function Page() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: currentStudent.id, newStatus }),
+        body: JSON.stringify({ id: currentStudent.studentId, newStatus }),
       })
 
       if (!response.ok) {
@@ -61,7 +64,7 @@ export default function Page() {
       }
 
       const updatedStudents = students.map(s => 
-        s.id === currentStudent.id ? {...s, status: newStatus} : s
+        s.studentId === currentStudent.studentId ? {...s, status: newStatus} : s
       )
       setStudents(updatedStudents)
       setCurrentStudent({...currentStudent, status: newStatus})
@@ -106,7 +109,7 @@ export default function Page() {
               </div>
               <div>
                 <p className="text-gray-400">ID</p>
-                <p className="font-medium">{currentStudent.id}</p>
+                <p className="font-medium">{currentStudent.studentId}</p>
               </div>
               <div>
                 <p className="text-gray-400">Group</p>
@@ -153,7 +156,7 @@ export default function Page() {
                     <User className="mr-3" size={20} />
                     <span>{student.name}</span>
                   </div>
-                  <span className="text-gray-400">{student.id}</span>
+                  <span className="text-gray-400">{student.studentId}</span>
                 </li>
               ))}
             </ul>

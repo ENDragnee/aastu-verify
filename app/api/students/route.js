@@ -6,7 +6,15 @@ export async function GET() {
   try {
     conn = await pool.getConnection();
     const rows = await conn.query('SELECT * FROM students');
-    return NextResponse.json(rows);
+
+    // Create a response object with headers to prevent caching
+    const response = NextResponse.json(rows);
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+
+    return response;
   } catch (error) {
     console.error('Error fetching students:', error);
     return NextResponse.json({ error: 'Error fetching student data' }, { status: 500 });

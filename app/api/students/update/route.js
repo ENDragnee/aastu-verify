@@ -16,7 +16,14 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Student not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ message: 'Student status updated successfully' });
+    // Create a response object with headers to prevent caching
+    const response = NextResponse.json({ message: 'Student status updated successfully' });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+
+    return response;
   } catch (error) {
     console.error('Error updating student status:', error);
     return NextResponse.json({ error: 'Error updating student data' }, { status: 500 });

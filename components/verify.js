@@ -18,7 +18,11 @@ export default function Page() {
 
   const loadStudentData = async () => {
     try {
-      const response = await fetch('/api/students')
+      const response = await fetch('/api/students',{
+        next: {
+          revalidate: 3,
+        },
+      })
       if (!response.ok) {
         throw new Error('Failed to fetch student data')
       }
